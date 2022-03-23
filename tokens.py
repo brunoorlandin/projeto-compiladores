@@ -1,7 +1,11 @@
 '''
 
-IDENTIFIER: ([a-z]^+.(!@#$%&*)^*.[0-9]^*) + ([A-z]^+.(!@#$%&*)^*.[0-9]^*)
-NUMERIC: [0-9]^+("."[0-9])^*
+letras = [a-z] + [A-Z]
+digito = "0" + "1" + "2" + "3" + "4" + "5" + "6" + "7" + "8" + "9"
+simbolos =  "!" + "@" + "#" + "$" + "%" + "&" + "*"
+
+IDENTIFIER: letra.(letra + digito + simbolo)*
+NUMERIC: (digito+) + (digito+.".".digito+)
 L_PAR: (
 R_PAR: )
 L_CHAVE: {

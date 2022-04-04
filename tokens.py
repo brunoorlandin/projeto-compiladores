@@ -61,3 +61,15 @@ MAIOR_IGUAL: c.r.i.t.i.c.a.l
 MENOR_IGUAL: b.l.o.c.k
 
 '''
+
+class Token(object):
+  def __init__(self, type, value):
+    self.type = type
+    self.value = value
+
+  #representação em string da classe
+  def __str__(self):
+    return "Token({type}, {value})".format(type = self.type, value = repr(self.value))
+
+  def __repr__(self):
+    return self.__str__()

@@ -1,24 +1,23 @@
+
+from ast import Pass
+from tokens import Token
 #Meu primeiro lexer
 
 #Definir os tokens da minha linguagem
 
 #EOF: token que representa o fim de um arquivo (end of file)
-INTEGER, PLUS, MINUS, MUL, DIV, LPAREN, RPAREN, EOF = (
-  "INTEGER", "PLUS", "MINUS", "MUL", "DIV", "(", ")", "EOF"
+INTEGER, STRING, IDENTIFIER, PLUS, MINUS, MUL, DIV, LPAREN, RPAREN, EOF = (
+  "INTEGER", "STRING", "IDENTIFIER", "PLUS", "MINUS", "MUL", "DIV", "(", ")", "EOF"
 )
 
-#classe Token, para representar os tokens durante a compilação
-class Token(object):
-  def __init__(self, type, value):
-    self.type = type
-    self.value = value
+#Palavras reservadas
+reserved = {}
+reserved['types'] = ['sword', 'shield', 'armor']
+reserved['arithmetic_operators'] = ['buff', 'debuff', 'heal', 'poison']
+reserved['conditional_operators'] = ['hit', 'miss']
+reserved['compare_operators'] = ['attack', 'defense', 'dodge', 'critical', 'block']
+#
 
-  #representação em string da classe
-  def __str__(self):
-    return "Token({type}, {value})".format(type = self.type, value = repr(self.value))
-
-  def __repr__(self):
-    return self.__str__()
 
 #classe que implementa o analisador lexico
 class Lexer(object):
@@ -29,6 +28,10 @@ class Lexer(object):
     self.pos = 0
     #guarda o caractere que está sendo analisado de fato
     self.current_char = self.text[self.pos]
+    #identifica se é string
+    self.is_string = False
+    #identifica se está em processo de verificação
+    self.is_verifier = False
 
   #para retorno de erro
   def error(self):
@@ -48,7 +51,16 @@ class Lexer(object):
   def skip_whitespace(self):
     while self.current_char is not None and self.current_char.isspace():
       self.advance()
-
+	
+  def string(self):
+    result = '"'
+    self.advance()
+    while self.current_char is not None and self.current_char is isinstance(self.current_char, str) and self.current_char is not '"':
+      result += self.current_char
+      self.advance()
+    result += self.current_char
+    return result
+  
   #funcao que verifica se um lexema lido eh um inteiro
   def integer(self):
     #variavel para concatecar numeros
@@ -58,6 +70,30 @@ class Lexer(object):
       self.advance()
     return int(result)
 
+	#função que verifica as palavras reservadas
+  def verify(self):
+    found_list = []
+    result = ""
+    if self.pos == 0:
+      for word in reserved:
+        if word[self.pos] is self.current_char:
+          found_list.append(word)
+      result += self.current_charf
+      self.advance()
+
+    while len(found_list) != 1 and self.current_char is not ' ':
+      for word in found_list:
+        if word[self.pos] is not self.current_char:
+          found_list.remove(word)
+      result += self.current_char
+      self.advance()    
+    
+    if len(found_list) == 1:
+        return Token(found_list[0].upper(), result)
+    
+    if self.current_char.isspace():
+      return Token(IDENTIFIER, result)
+        
   #funcao que implementa o "core/nucleo" do analisador lexico
   #vai quebrar a sentença/arquivo de texto em vários tokens, um por vez
   def get_next_token(self):
@@ -68,28 +104,16 @@ class Lexer(object):
         self.skip_whitespace()
         continue
 
-      #verifica se o caractere atual eh um digito
+      #verifica se o caractere atual é um digito
       if self.current_char.isdigit():
         #retorno um Token do tipo INTEGER, com valor referente ao lexema sendo processado caractere a caractere
         return Token(INTEGER, self.integer())
 
+      #verifica se o caractere é uma string
+      if self.current_char == '"':
+        return Token(STRING, self.string())
       #verifica se o lexema encontrado é um operador
-      if self.current_char == "+":
-        self.advance()
-        return Token(PLUS, "+")
-
-      if self.current_char == "-":
-        self.advance()
-        return Token(MINUS, "-")
-
-      if self.current_char == "*":
-        self.advance()
-        return Token(MUL, "*")
-
-      if self.current_char == "/":
-        self.advance()
-        return Token(DIV, "/")
-
+      
       #verifica se o lexema encontrado é um parenteses (abrindo ou fechando)
       if self.current_char == "(":
         self.advance()

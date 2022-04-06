@@ -1,12 +1,16 @@
 
 from ast import Pass
+from unittest import result
 from tokens import Token
+import re
 
 reserved = {}
 reserved['types'] = ['sword', 'shield', 'armor']
 reserved['arithmetic_operators'] = ['buff', 'debuff', 'heal', 'poison']
 reserved['conditional_operators'] = ['hit', 'miss']
 reserved['compare_operators'] = ['attack', 'defense', 'dodge', 'critical', 'block']
+
+identifier = re.compile("[a-zA-z]+[a-zA-z0-9]")
 
 class Lexer(object):
   def __init__(self, text):
@@ -41,7 +45,6 @@ class Lexer(object):
     return result
   
   def integer(self):
-    
     result = ""
     while self.current_char is not None and self.current_char.isdigit():
       result += self.current_char
@@ -84,46 +87,56 @@ class Lexer(object):
 
       if self.current_char == '"':
         return Token(STRING, self.string())'''
+
+      result = ""
       
       if self.current_char == "(":
         self.advance()
         return Token("L_PAR", "(")
-
-      if self.current_char == ")":
+      elif self.current_char == ")":
         self.advance()
         return Token("R_PAR", ")")
-
-      if self.current_char == "{":
+      elif self.current_char == "{":
         self.advance()
         return Token("L_CHAVE", "{")
-
-      if self.current_char == "}":
+      elif self.current_char == "}":
         self.advance()
         return Token("R_CHAVE", "}")
-
-      if self.current_char == "=":
+      elif self.current_char == "=":
         self.advance()
         return Token("ATRIBUIDOR", "=")
+      elif self.current_char == ";":
+        self.advance()
+        return Token("EOF", "=")
+      elif self.current_char != " ":
+        result += self.current_char
+        self.advance()
+      else:
+        if re.fullmatch(identifier, result):
+          return Token("IDENTIFIER", "=")
+        result = ""
 
       self.error()
 
-    return Token("EOF", None)
+    #return Token("EOF", None)
 
 def main():
-  while True:
-    try:
-      try:
-        text = raw_input("myLexer> ")
-      except NameError:
-        text = input("myLexer> ")
-    except EOFError:
-      break
-    if not text:
-      continue
-    
+  file = open("source.rpg", "r")
+  line = file.readlines()
+  lines_split = []
+  lines = []
+
+  for item in line:
+    lines_split.append(item.split("\n"))
+
+  for i in range(len(lines_split)):
+    if lines_split[i][0] != '':
+      lines.append(lines_split[i][0])
+
+  for i in range(len(lines)):
+    text = lines[i]
     lexer = Lexer(text)
-    '''Imprime todos os tokens '''
-    
+
     token = lexer.get_next_token()
     
     while(token.type is not "EOF"):

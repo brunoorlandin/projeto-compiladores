@@ -10,6 +10,7 @@ R_PAR: )
 L_CHAVE: {
 R_CHAVE: }
 ATRIBUIDOR: =
+EOL: ;
 
 ## Tipos das variaveis
 # Para os tipos das variaveis foram utilizados as palavras abaixo:

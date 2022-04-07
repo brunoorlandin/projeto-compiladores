@@ -43,3 +43,8 @@ Projeto desenvolvido em sala com a finalidade de criar um compilador para uma li
 - "debuff" significará subtração (-)
 - "heal" significará multiplicação (\*)
 - "poison" significará divisão (/)
+
+### Instruções para utilizar a linguagem
+
+- Adicionar o código ao arquivo source.rpg
+- No terminal utilizar o seguinte comando: `python3 lexer.py`

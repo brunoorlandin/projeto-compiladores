@@ -13,6 +13,7 @@ NUMERIC: (digito+) + (digito+.".".digito+)
 identifier = "[a-zA-z]+[a-zA-z0-9]"
 numeric = "([0-9]+)|([0-9].[0-9]+)"
 sword = "sword"
+shield = "shield"
 
 texto = "1"
 

@@ -32,13 +32,13 @@ class Lexer(object):
       self.current_char = self.text[self.pos]
 
   def skip_whitespace(self):
-    while self.current_char is not None and self.current_char.isspace():
+    while self.current_char != None and self.current_char.isspace():
       self.advance()
 	
   def string(self):
     result = '"'
     self.advance()
-    while self.current_char is not None and self.current_char is isinstance(self.current_char, str) and self.current_char is not '"':
+    while self.current_char != None and self.current_char is isinstance(self.current_char, str) and self.current_char != '"':
       result += self.current_char
       self.advance()
     result += self.current_char
@@ -46,79 +46,91 @@ class Lexer(object):
   
   def integer(self):
     result = ""
-    while self.current_char is not None and self.current_char.isdigit():
+    while self.current_char != None and self.current_char.isdigit():
       result += self.current_char
       self.advance()
     return int(result)
-
+  
   def verify(self):
     found_list = []
     result = ""
     if self.pos == 0:
-      for word in reserved:
-        if word[self.pos] is self.current_char:
-          found_list.append(word)
-      result += self.current_charf
+      for key in reserved:
+        for word in reserved[key]:
+          if word[self.pos] is self.current_char:
+            found_list.append(word)
+      result += self.current_char
       self.advance()
-
-    while len(found_list) != 1 and self.current_char is not ' ':
+    while len(found_list) != 1 and self.current_char != ' ' and self.current_char != None:
       for word in found_list:
-        if word[self.pos] is not self.current_char:
+        if word[self.pos] != self.current_char:
+          print(f'{word}')
           found_list.remove(word)
       result += self.current_char
       self.advance()    
+    print(f'{result}')
+    print(f'{len(found_list)}')
     
     if len(found_list) == 1:
-        return Token(found_list[0].upper(), result)
+      while len(found_list[0]) != len(result):
+        result += self.current_char
+        self.advance()
+      return Token(found_list[0].upper(), result)
     
     if self.current_char.isspace():
       return Token("IDENTIFIER", result)
         
   def get_next_token(self):
-    
-    while self.current_char is not None:
+    result = ""
+    while self.current_char != None:
       
       if self.current_char.isspace():
         self.skip_whitespace()
         continue
 
-      '''if self.current_char.isdigit():
-        return Token(INTEGER, self.integer())
+      if self.current_char.isdigit():
+        return Token('INTEGER', self.integer())
 
       if self.current_char == '"':
-        return Token(STRING, self.string())'''
+        return Token('STRING', self.string())
 
-      result = ""
-      
       if self.current_char == "(":
         self.advance()
         return Token("L_PAR", "(")
+      
       elif self.current_char == ")":
         self.advance()
         return Token("R_PAR", ")")
+      
       elif self.current_char == "{":
         self.advance()
         return Token("L_CHAVE", "{")
+      
       elif self.current_char == "}":
         self.advance()
         return Token("R_CHAVE", "}")
+
       elif self.current_char == "=":
         self.advance()
         return Token("ATRIBUIDOR", "=")
       elif self.current_char == ";":
         self.advance()
-        return Token("EOF", "=")
+        return Token("EOL", ";")
+      
       elif self.current_char != " ":
-        result += self.current_char
-        self.advance()
+       # result += self.current_char
+        return self.verify()
+        continue
+      
       else:
         if re.fullmatch(identifier, result):
           return Token("IDENTIFIER", "=")
         result = ""
+        continue
 
       self.error()
 
-    #return Token("EOF", None)
+    return Token("EOF", None)
 
 def main():
   file = open("source.rpg", "r")
@@ -138,8 +150,8 @@ def main():
     lexer = Lexer(text)
 
     token = lexer.get_next_token()
-    
-    while(token.type is not "EOF"):
+    while(token.type != "EOF"):
+      print(f'achou token {token}')
       print(token)
       token = lexer.get_next_token()
 

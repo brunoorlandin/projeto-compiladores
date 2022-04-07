@@ -1,5 +1,6 @@
 
 from ast import Pass
+from bdb import Breakpoint
 from unittest import result
 from tokens import Token
 import re
@@ -38,11 +39,13 @@ class Lexer(object):
   def string(self):
     result = '"'
     self.advance()
-    while self.current_char != None and self.current_char is isinstance(self.current_char, str) and self.current_char != '"':
-      result += self.current_char
+    while self.current_char != None and self.current_char != '"':
+      if self.current_char != None: 
+        result += self.current_char
       self.advance()
-    result += self.current_char
-    return result
+    result += '"'
+    self.advance()
+    return Token('STRING', result)
   
   def integer(self):
     result = ""
@@ -54,36 +57,35 @@ class Lexer(object):
   def verify(self):
     found_list = []
     result = ""
-    if self.pos == 0:
+    if len(result) == 0:
       for key in reserved:
         for word in reserved[key]:
-          if word[self.pos] is self.current_char:
+          if word[len(result)] is self.current_char:
             found_list.append(word)
       result += self.current_char
       self.advance()
     while len(found_list) != 1 and self.current_char != ' ' and self.current_char != None:
       for word in found_list:
-        if word[self.pos] != self.current_char:
-          print(f'{word}')
+        if word[len(result)] != self.current_char:
           found_list.remove(word)
       result += self.current_char
       self.advance()    
-    print(f'{result}')
-    print(f'{len(found_list)}')
     
     if len(found_list) == 1:
       while len(found_list[0]) != len(result):
         result += self.current_char
         self.advance()
       return Token(found_list[0].upper(), result)
-    
+    if result[-1] == ';':
+      self.pos -= 1
+      result = result[:-1]
+      return Token("IDENTIFIER", result)
     if self.current_char.isspace():
       return Token("IDENTIFIER", result)
         
   def get_next_token(self):
     result = ""
     while self.current_char != None:
-      
       if self.current_char.isspace():
         self.skip_whitespace()
         continue
@@ -92,7 +94,7 @@ class Lexer(object):
         return Token('INTEGER', self.integer())
 
       if self.current_char == '"':
-        return Token('STRING', self.string())
+        return self.string()
 
       if self.current_char == "(":
         self.advance()
@@ -148,10 +150,8 @@ def main():
   for i in range(len(lines)):
     text = lines[i]
     lexer = Lexer(text)
-
     token = lexer.get_next_token()
-    while(token.type != "EOF"):
-      print(f'achou token {token}')
+    while token.type != "EOF" :
       print(token)
       token = lexer.get_next_token()
 

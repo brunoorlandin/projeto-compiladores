@@ -4,11 +4,18 @@
 
 🚧 Em desenvolvimento... 🚧
 
+### Etapas finalizadas
+- Definição da estrutura da linguagem ✔️
+- Definição de tokens da linguagem ✔️
+- Analisador léxico ✔️
+
 ## Descrição 📌 <a name="description"></a>
 
 Projeto desenvolvido em sala com a finalidade de criar um compilador para uma linguagem própria e compilar seu código para ser rodade na linguagem Python
 
 ## Estrutura da linguagem criada
+
+### Linguagem RPG (.rpg)
 
 ### Variáveis
 
@@ -16,7 +23,7 @@ Projeto desenvolvido em sala com a finalidade de criar um compilador para uma li
 
 ### Variaveis
 
-- qualquer coisa incluindo simbolos
+- Qualquer palavra, incluindo símbolos e números
 
 ### Atribuição de tipos das variáveis:
 
@@ -41,10 +48,23 @@ Projeto desenvolvido em sala com a finalidade de criar um compilador para uma li
 
 - "buff" significará adição (+)
 - "debuff" significará subtração (-)
-- "heal" significará multiplicação (\*)
+- "heal" significará multiplicação (*)
 - "poison" significará divisão (/)
 
-### Instruções para utilizar a linguagem
+## Instruções de utilização da linguagem
 
-- Adicionar o código ao arquivo source.rpg
-- No terminal utilizar o seguinte comando: `python3 lexer.py`
+### Clone este repositório
+```bash
+git clone https://github.com/brunoorlandin/projeto-compiladores.git
+```
+### Acessar diretório do projeto
+```bash
+cd projeto-compiladores
+```
+
+### Adicionar o código ao arquivo source.rpg
+
+### No terminal utilizar o seguinte comando
+```bash
+python lexer.py
+```

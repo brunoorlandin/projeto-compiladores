@@ -32,25 +32,36 @@ class Interpreter(object):
 
         status = False
 
+        pos = self.lexer.pos
         token = self.current_token
 
-        if token.type == "SHIELD":
+        if self.current_token.type == "SHIELD":
             self.eat("SHIELD")
-            self.eat("IDENTIFIER")
-            print(self.lexer.pos)
-            self.eat("EOL")
-            print(self.lexer.pos)
-            status = self.expr()
-        elif token.type == "SWORD":
+            if self.current_token.type == "IDENTIFIER":
+                self.eat("IDENTIFIER")
+                print(self.lexer.pos)
+                
+                if self.current_token.type == "EOL":
+                    self.eat("EOL")
+                    print(self.lexer.pos)
+                    status = self.expr()
+        elif self.current_token.type == "SWORD":
             self.eat("SWORD")
-            self.eat("IDENTIFIER")
-            print(self.lexer.pos)
-            self.eat("EOL")
-            print(self.lexer.pos)
-            status = self.expr()
+            if self.current_token.type == "IDENTIFIER":
+                self.eat("IDENTIFIER")
+                print(self.lexer.pos)
+                if self.current_token.type == "EOL":
+                    self.eat("EOL")
+                    print(self.lexer.pos)
+                    status = self.expr()
 
         print(self.lexer.pos)
         
+        
+        if status == False:
+            self.lexer.pos = pos
+            self.current_token = token
+
         return status
     
     def basicop(self):
@@ -65,43 +76,55 @@ class Interpreter(object):
 
         status = False
 
-        self.eat("IDENTIFIER")
-        self.eat("ATRIBUIDOR")
-
+        pos = self.lexer.pos
         token = self.current_token
-
-        if token.type == "IDENTIFIER":
-            self.eat("IDENTIFIER")
-            print("entrou if")
-            if token.type in ["BUFF", "DEBUFF", "HEAL", "POISON"]:
-                if token.type == "BUFF":
-                    self.eat("BUFF")
-                elif token.type == "DEBUFF":
-                    self.eat("DEBUFF")
-                elif token.type == "HEAL":
-                    self.eat("HEAL")
-                else:
-                    self.eat("POISON")
-            self.eat("IDENTIFIER")
-            self.eat("EOL")
-            status = self.expr()
-        elif token.type == "INTEGER":
-            self.eat("INTEGER")
-            if token.type in ["BUFF", "DEBUFF", "HEAL", "POISON"]:
-                if token.type == "BUFF":
-                    self.eat("BUFF")
-                elif token.type == "DEBUFF":
-                    self.eat("DEBUFF")
-                elif token.type == "HEAL":
-                    self.eat("HEAL")
-                else:
-                    self.eat("POISON")
-            self.eat("INTEGER")
-            self.eat("EOL")
-            status = self.expr()
-        else:
-            return status
         
+        op = ["BUFF", "DEBUFF", "HEAL", "POISON"]
+
+        if self.current_token.type == "IDENTIFIER":
+            self.eat("IDENTIFIER")
+            if self.current_token.type == "ATRIBUIDOR":
+                self.eat("ATRIBUIDOR")
+                
+                if self.current_token.type == "IDENTIFIER":
+                    self.eat("IDENTIFIER")
+                    print("banana", self.current_token)
+                    if self.current_token.type in op:
+                        if self.current_token.type == "BUFF":
+                            self.eat("BUFF")
+                        elif self.current_token.type == "DEBUFF":
+                            self.eat("DEBUFF")
+                        elif self.current_token.type == "HEAL":
+                            self.eat("HEAL")
+                        elif self.current_token.type == "POISON":
+                            self.eat("POISON")
+                        if self.current_token.type == "IDENTIFIER":
+                            self.eat("IDENTIFIER")
+                            if self.current_token.type == "EOL":
+                                self.eat("EOL")
+                                status = self.expr()
+                elif self.current_token.type == "INTEGER":
+                    self.eat("INTEGER")
+                    if self.current_token.type in op:
+                        if self.current_token.type == "BUFF":
+                            self.eat("BUFF")
+                        elif self.current_token.type == "DEBUFF":
+                            self.eat("DEBUFF")
+                        elif self.current_token.type == "HEAL":
+                            self.eat("HEAL")
+                        elif self.current_token.type == "POISON":
+                            self.eat("POISON")
+                        if self.current_token.type == "INTEGER":
+                            self.eat("INTEGER")
+                            if self.current_token.type == "EOL":
+                                self.eat("EOL")
+                                status = self.expr()
+        
+       
+        if status == False:
+            self.lexer.pos = pos
+            self.current_token = token
+
         return status
 
     def attrib(self):
@@ -161,19 +184,6 @@ def main():
         result = interpreter.expr()
 
     print(result)
-    
-    # while True:
-    #     try:
-    #         #get the input
-    #         text = input('calc> ')
-    #     except EOFError:
-    #         break
-    #     if not text:
-    #         continue
-    #     lexer = Lexer(text)
-    #     interpreter = Interpreter(lexer)
-    #     result = interpreter.expr()
-    #     print(result)
 
 
 if __name__ == '__main__':

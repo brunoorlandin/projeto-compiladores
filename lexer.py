@@ -148,7 +148,7 @@ def main():
     text = lines[i]
     lexer = Lexer(text)
     token = lexer.get_next_token()
-    while token.type != "EOF" :
+    while token.type != "EOF":
       print(token)
       token = lexer.get_next_token()
 

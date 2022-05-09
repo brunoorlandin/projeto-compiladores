@@ -5,9 +5,6 @@ from tokens import Token
 #
 # EOF (end-of-file) token is used to indicate that
 # there is no more input left for lexical analysis
-INTEGER, PLUS, MINUS, MUL, DIV, LPAREN, RPAREN, EOF = (
-    'INTEGER', 'PLUS', 'MINUS', 'MUL', 'DIV', '(', ')', 'EOF'
-)
 
 class Interpreter(object):
     def __init__(self, lexer):
@@ -28,56 +25,121 @@ class Interpreter(object):
         else:
             self.error()
 
-    def factor(self):
-        """factor : INTEGER | LPAREN expr RPAREN"""
+    def vardec(self):
+        print("entrou vardec")
+        '''vardec: (INTEGER | SWORD) IDENTIFIER EOL'''
+        print(self.current_token)
+
+        status = False
+
         token = self.current_token
-        if token.type == INTEGER:
-            self.eat(INTEGER)
-            return token.value
-        elif token.type == LPAREN:
-            self.eat(LPAREN)
-            result = self.expr()
-            self.eat(RPAREN)
-            return result
 
-    def term(self):
-        """term : factor ((MUL | DIV) factor)*"""
-        result = self.factor()
+        if token.type == "SHIELD":
+            self.eat("SHIELD")
+            self.eat("IDENTIFIER")
+            print(self.lexer.pos)
+            self.eat("EOL")
+            print(self.lexer.pos)
+            status = self.expr()
+        elif token.type == "SWORD":
+            self.eat("SWORD")
+            self.eat("IDENTIFIER")
+            print(self.lexer.pos)
+            self.eat("EOL")
+            print(self.lexer.pos)
+            status = self.expr()
 
-        while self.current_token.type in (MUL, DIV):
-            token = self.current_token
-            if token.type == MUL:
-                self.eat(MUL)
-                result = result * self.factor()
-            elif token.type == DIV:
-                self.eat(DIV)
-                result = result / self.factor()
+        print(self.lexer.pos)
+        
+        return status
+    
+    def basicop(self):
+        print("entrou basicop")
+        """
+        basicop: IDENTIFIER ATRIBUIDOR IDENTIFIER (BUFF | DEBUFF | HEAL | POISON) IDENTIFIER EOL |
+                 IDENTIFIER ATRIBUIDOR INTEGER (BUFF | DEBUFF | HEAL | POISON) INTEGER EOL
+        """
+        print(self.current_token)
+        
+        print(self.current_token.type)
 
-        return result
+        status = False
+
+        self.eat("IDENTIFIER")
+        self.eat("ATRIBUIDOR")
+
+        token = self.current_token
+
+        if token.type == "IDENTIFIER":
+            self.eat("IDENTIFIER")
+            print("entrou if")
+            if token.type in ["BUFF", "DEBUFF", "HEAL", "POISON"]:
+                if token.type == "BUFF":
+                    self.eat("BUFF")
+                elif token.type == "DEBUFF":
+                    self.eat("DEBUFF")
+                elif token.type == "HEAL":
+                    self.eat("HEAL")
+                else:
+                    self.eat("POISON")
+            self.eat("IDENTIFIER")
+            self.eat("EOL")
+            status = self.expr()
+        elif token.type == "INTEGER":
+            self.eat("INTEGER")
+            if token.type in ["BUFF", "DEBUFF", "HEAL", "POISON"]:
+                if token.type == "BUFF":
+                    self.eat("BUFF")
+                elif token.type == "DEBUFF":
+                    self.eat("DEBUFF")
+                elif token.type == "HEAL":
+                    self.eat("HEAL")
+                else:
+                    self.eat("POISON")
+            self.eat("INTEGER")
+            self.eat("EOL")
+            status = self.expr()
+        else:
+            return status
+        
+        return status
+
+    def attrib(self):
+        """
+        attrib: IDENTIFIER ATRIBUIDOR IDENTIFIER EOL | 
+                IDENTIFIER ATRIBUIDOR (INTEGER | SWORD) EOL |
+                IDENTIFIER ATRIBUIDOR (BUFF | DEBUFF | HEAL | POISON) IDENTIFIER EOL
+        """
+
 
     def expr(self):
-        """Arithmetic expression parser / interpreter.
+        print(self.current_token)
 
-        calc> 7 + 3 * (10 / (12 / (3 + 1) - 1))
-        22
+        '''
+        expr: vardec | basicop | attib | if-else | Ɛ
+        vardec: (INTEGER | SWORD) IDENTIFIER EOL
+        basicop: INTEGER (BUFF | DEBUFF | HEAL | POISON) INTEGER EOL
+        attrib: IDENTIFIER ATRIBUIDOR IDENTIFIER EOL | 
+                IDENTIFIER ATRIBUIDOR (INTEGER | SWORD) EOL |
+                IDENTIFIER ATRIBUIDOR (BUFF | DEBUFF | HEAL | POISON) IDENTIFIER EOL
+        if-else: HIT cond L_CHAVE S R_CHAVE MISS L_CHAVE S  R_CHAVE S | HIT cond L_CHAVE S R_CHAVE
+        cond: IDENTIFIER comp IDENIFIER | NUMERIC comp NUMERIC | STRING DODGE STRING
+        comp: ATTACK | DEFENSE | DODGE | CRITICAL | BLOCK 
+        '''
 
-        expr   : term ((PLUS | MINUS) term)*
-        term   : factor ((MUL | DIV) factor)*
-        factor : INTEGER | LPAREN expr RPAREN
-        """
-        result = self.term()
 
-        while self.current_token.type in (PLUS, MINUS):
-            token = self.current_token
-            if token.type == PLUS:
-                self.eat(PLUS)
-                result = result + self.term()
-            elif token.type == MINUS:
-                self.eat(MINUS)
-                result = result - self.term()
-
-        return result
-
+        if self.vardec():
+            print("vardec")
+            return True
+        elif self.basicop():
+            print("basicop")
+            return True
+        elif self.current_token.type == 'EOF':
+            return True
+        else:
+            print(self.current_token)
+            return False
+        
 
 def main():
     file = open("source.rpg", "r")
@@ -97,6 +159,8 @@ def main():
         lexer = Lexer(text)
         interpreter = Interpreter(lexer)
         result = interpreter.expr()
+
+    print(result)
     
     # while True:
     #     try:

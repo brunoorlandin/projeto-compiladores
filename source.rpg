@@ -1,4 +1,1 @@
 shield num1 = 10;
-shield num2 = 20;
-sword nu = "aaa";
-shield res = num1 buff num2;

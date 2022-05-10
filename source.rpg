@@ -1,2 +1,4 @@
-shield num ;
-num3 = num1 buff num2 ;
+shield num1 ;
+shield num2 ;
+num2 = 10 ;
+num1 = num2 ;

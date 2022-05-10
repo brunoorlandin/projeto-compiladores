@@ -186,7 +186,7 @@ class Interpreter(object):
     def cond(self):
         '''
         cond: IDENTIFIER comp IDENIFIER |
-              NUMERIC comp NUMERIC |
+              INTEGER comp INTEGER |
               STRING DODGE STRING
         '''
         status = False
@@ -195,6 +195,14 @@ class Interpreter(object):
         token = self.current_token
 
         
+        if self.current_token.type == "IDENTIFIER":
+            self.eat("IDENTIFIER")
+            status = self.comp()
+            if self.current_token.type == "IDENTIFIER":
+                self.eat("IDENTIFIER")
+                status = self.expr()
+
+
 
         if status == False:
             self.lexer.pos = pos
@@ -260,6 +268,9 @@ class Interpreter(object):
         elif self.attrib():
             print("attrib")
             return True
+        elif self.cond():
+            print("cond")
+            return True
         elif self.comp():
             print("comp")
             return True
@@ -267,6 +278,7 @@ class Interpreter(object):
             return True
         else:
             print(self.current_token)
+            self.error()
             return False
         
 

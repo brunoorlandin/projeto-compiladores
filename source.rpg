@@ -1,4 +1,0 @@
-shield num1 ;
-shield num2 ;
-num2 = 10 ;
-num1 = num2 ;

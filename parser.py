@@ -165,6 +165,74 @@ class Interpreter(object):
 
         return status
 
+    def ifElse(self):
+        '''
+        if-else: HIT cond L_CHAVE S R_CHAVE MISS L_CHAVE S  R_CHAVE S | 
+                 HIT cond L_CHAVE S R_CHAVE
+        '''
+        status = False
+
+        pos = self.lexer.pos
+        token = self.current_token
+
+
+
+        if status == False:
+            self.lexer.pos = pos
+            self.current_token = token
+
+        return status
+
+    def cond(self):
+        '''
+        cond: IDENTIFIER comp IDENIFIER |
+              NUMERIC comp NUMERIC |
+              STRING DODGE STRING
+        '''
+        status = False
+
+        pos = self.lexer.pos
+        token = self.current_token
+
+        
+
+        if status == False:
+            self.lexer.pos = pos
+            self.current_token = token
+
+        return status
+
+    def comp(self):
+        '''
+        comp: ATTACK | DEFENSE | DODGE | CRITICAL | BLOCK 
+        '''
+        status = False
+
+        pos = self.lexer.pos
+        token = self.current_token
+
+        if self.current_token.type == "ATTACK":
+            self.eat("ATTACK")
+            status = self.expr()
+        elif self.current_token.type == "DEFENSE":
+            self.eat("DEFENSE")
+            status = self.expr()
+        elif self.current_token.type == "DODGE":
+            self.eat("DODGE")
+            status = self.expr()
+        elif self.current_token.type == "CRITICAL":
+            self.eat("CRITICAL")
+            status = self.expr()
+        elif self.current_token.type == "BLOCK":
+            self.eat("BLOCK")
+            status = self.expr()
+
+        if status == False:
+            self.lexer.pos = pos
+            self.current_token = token
+
+        return status
+
 
     def expr(self):
         print(self.current_token)
@@ -176,7 +244,8 @@ class Interpreter(object):
                  IDENTIFIER ATRIBUIDOR INTEGER (BUFF | DEBUFF | HEAL | POISON) INTEGER EOL
         attrib: IDENTIFIER ATRIBUIDOR IDENTIFIER EOL | 
                 IDENTIFIER ATRIBUIDOR (INTEGER | STRING) EOL
-        if-else: HIT cond L_CHAVE S R_CHAVE MISS L_CHAVE S  R_CHAVE S | HIT cond L_CHAVE S R_CHAVE
+        if-else: HIT cond L_CHAVE S R_CHAVE MISS L_CHAVE S  R_CHAVE S | 
+                 HIT cond L_CHAVE S R_CHAVE
         cond: IDENTIFIER comp IDENIFIER | NUMERIC comp NUMERIC | STRING DODGE STRING
         comp: ATTACK | DEFENSE | DODGE | CRITICAL | BLOCK 
         '''
@@ -190,6 +259,9 @@ class Interpreter(object):
             return True
         elif self.attrib():
             print("attrib")
+            return True
+        elif self.comp():
+            print("comp")
             return True
         elif self.current_token.type == 'EOF':
             return True

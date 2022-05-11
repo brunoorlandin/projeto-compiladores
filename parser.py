@@ -1,4 +1,3 @@
-from tkinter.tix import Tree
 from lexer import Lexer
 from tokens import Token
 

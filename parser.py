@@ -325,7 +325,7 @@ class Interpreter(object):
                 IDENTIFIER ATRIBUIDOR (INTEGER | STRING) EOL EXPR
         if-else: HIT cond L_CHAVE EXPR R_CHAVE MISS L_CHAVE EXPR R_CHAVE EXPR | 
                  HIT cond L_CHAVE EXPR R_CHAVE EXPR
-        cond: IDENTIFIER comp IDENTIFIER | NUMERIC comp NUMERIC | STRING DODGE STRING
+        cond: IDENTIFIER comp IDENTIFIER | NUMERIC comp NUMERIC
         comp: ATTACK | DEFENSE | DODGE | CRITICAL | BLOCK 
         '''
 

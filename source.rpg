@@ -1,1 +1,40 @@
-num1 attack num2 
+hit num1 attack num2 { 
+    sword res ; 
+    hit num1 attack num2 { 
+        sword res ; 
+    } miss {
+        shield res ;
+        shield num1 ;
+        shield num2 ;
+        res = num1 buff num2 ;
+        res = 10 buff 10 ; 
+    }
+} miss {
+    shield res ;
+    shield num1 ;
+    shield num2 ;
+    res = num1 buff num2 ;
+    res = 10 buff 10 ; 
+    hit num1 attack num2 { 
+        sword res ; 
+        hit num1 attack num2 { 
+            sword res ; 
+        } miss {
+            shield res ;
+            shield num1 ;
+            shield num2 ;
+            res = num1 buff num2 ;
+            res = 10 buff 10 ; 
+        }
+    } miss {
+        shield res ;
+        shield num1 ;
+        shield num2 ;
+        res = num1 buff num2 ;
+        res = 10 buff 10 ; 
+    
+    }
+    
+    res = num1 buff num2 ;
+    res = 10 buff 10 ; 
+}

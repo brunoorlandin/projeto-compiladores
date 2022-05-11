@@ -1,3 +1,4 @@
+from tkinter.tix import Tree
 from lexer import Lexer
 from tokens import Token
 
@@ -16,6 +17,8 @@ class Interpreter(object):
         self.listaTokens =[]
         self.posListaTokens = 0
 
+        self.debugStatus = False
+
         token = lexer.get_next_token()
         self.current_token = token
         while token.type != "EOF":
@@ -23,7 +26,8 @@ class Interpreter(object):
           token = lexer.get_next_token()
         self.listaTokens.append(token)
 
-        print(self.listaTokens)
+        if self.debugStatus:
+            print(self.listaTokens)
 
 
     def error(self):
@@ -41,7 +45,8 @@ class Interpreter(object):
             self.error()
 
     def vardec(self):
-        print("Entrou VARDEC")
+        if self.debugStatus:
+            print("Entrou VARDEC")
         '''vardec: (SHIELD | SWORD) IDENTIFIER EOL EXPR'''
         status = False
         pos = self.posListaTokens
@@ -73,11 +78,14 @@ class Interpreter(object):
             self.posListaTokens = pos
             self.current_token = self.listaTokens[pos]
 
-        print("Retorna de VARDEC ", status)
+        if self.debugStatus:
+            print("Retorna de VARDEC ", status)
+        
         return status
     
     def basicop(self):
-        print("Entrou BASICOP")
+        if self.debugStatus:
+            print("Entrou BASICOP")
         """
         basicop: IDENTIFIER ATRIBUIDOR IDENTIFIER (BUFF | DEBUFF | HEAL | POISON) IDENTIFIER EOL EXPR|
                  IDENTIFIER ATRIBUIDOR INTEGER (BUFF | DEBUFF | HEAL | POISON) INTEGER EOL EXPR
@@ -130,11 +138,13 @@ class Interpreter(object):
             self.posListaTokens = pos
             self.current_token = self.listaTokens[pos]
 
-        print("Retorna de BASICOP ", status)
+        if self.debugStatus:
+            print("Retorna de BASICOP ", status)
         return status
 
     def attrib(self):
-        print("Entrou ATTRIB")
+        if self.debugStatus:
+            print("Entrou ATTRIB")
         
         """
         attrib: IDENTIFIER ATRIBUIDOR IDENTIFIER EOL EXPR | 
@@ -175,12 +185,15 @@ class Interpreter(object):
             self.posListaTokens = pos
             self.current_token = self.listaTokens[pos]
 
-        print("Retorna de ATTRIB ", status)
+        if self.debugStatus:
+            print("Retorna de ATTRIB ", status)
+        
         return status
         
 
     def ifElse(self):
-        print("Entrou ifELSE")
+        if self.debugStatus:
+            print("Entrou ifELSE")
         '''
         if-else: HIT cond L_CHAVE EXPR R_CHAVE MISS L_CHAVE EXPR  R_CHAVE EXPR | 
                  HIT cond L_CHAVE EXPR R_CHAVE EXPR
@@ -226,11 +239,14 @@ class Interpreter(object):
             self.posListaTokens = pos
             self.current_token = self.listaTokens[pos]
 
-        print("Retorna de ifElse ", status)
+        if self.debugStatus:
+            print("Retorna de ifElse ", status)
+        
         return status
 
     def cond(self):
-        print("Entrou COND")
+        if self.debugStatus:
+            print("Entrou COND")
         '''
         cond: IDENTIFIER comp IDENTIFIER |
               INTEGER comp INTEGER |
@@ -265,11 +281,14 @@ class Interpreter(object):
             self.posListaTokens = pos
             self.current_token = self.listaTokens[pos]
 
-        print("Retorna de COND ", status)
+        if self.debugStatus:
+            print("Retorna de COND ", status)
+        
         return status
 
     def comp(self):
-        print("Entrou COMP")
+        if self.debugStatus:
+            print("Entrou COMP")
         '''
         comp: ATTACK | DEFENSE | DODGE | CRITICAL | BLOCK 
         '''
@@ -285,13 +304,17 @@ class Interpreter(object):
             self.posListaTokens = pos
             self.current_token = self.listaTokens[pos]
 
-        print("Retorna de COMP ", status)
+        if self.debugStatus:
+            print("Retorna de COMP ", status)
+        
         return status
 
 
     def expr(self):
-        #print(self.current_token)
-        print("Entrou EXPR")
+        if self.debugStatus:
+            print(self.current_token)
+        if self.debugStatus:
+            print("Entrou EXPR")
         pos = self.posListaTokens
 
         '''
@@ -307,42 +330,43 @@ class Interpreter(object):
         comp: ATTACK | DEFENSE | DODGE | CRITICAL | BLOCK 
         '''
 
-        
-        
-        
         if self.vardec():
-            print("Return EXPR True")
+            if self.debugStatus:
+                print("Return EXPR True")
             return True
         
         elif self.basicop():
-            print("Return EXPR True")
+            if self.debugStatus:
+                print("Return EXPR True")
             return True
         
         elif self.attrib():
-            print("Return EXPR True")
+            if self.debugStatus:
+                print("Return EXPR True")
             return True
 
         elif self.ifElse():
-            print("Return EXPR True")
+            if self.debugStatus:
+                print("Return EXPR True")
             return True
         
         elif self.current_token.type == 'EOF':
-            print("Return EXPR True")
+            if self.debugStatus:
+                print("Return EXPR True")
             return True
 
         elif self.current_token.type == 'R_CHAVE' and self.ifQuantity > 0:
             self.ifQuantity -= 1
-            print("Return EXPR True")
+            if self.debugStatus:
+                print("Return EXPR True")
             return True
         else:
 
-            print("Return EXPR False")
+            if self.debugStatus:
+                print("Return EXPR False")
             self.posListaTokens = pos
             self.current_token = self.listaTokens[pos]
             self.error()
-            return False
-
-        
 
 def main():
     file = open("source.rpg", "r")
@@ -363,9 +387,13 @@ def main():
 
     lexer = Lexer(text)
     interpreter = Interpreter(lexer)
-    result = interpreter.expr()
+    status = interpreter.expr()
 
-    print(result)
+    if status:
+        print("Código sem erros")
+    
+    if interpreter.debugStatus:
+        print(status)
 
 
 if __name__ == '__main__':
